@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Create a Test Group</title>
+</head>
+<body>
+<h1>Create Test Group</h1>
+<form th:action="@{/test/group/create}" method="post">
+    <label for="name">Group Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description" required><br><br>
+
+    <input type="submit" value="Create Group">
+</form>
+
+<a th:href="@{/test/list}">Back to test list</a>
+</body>
+</html>

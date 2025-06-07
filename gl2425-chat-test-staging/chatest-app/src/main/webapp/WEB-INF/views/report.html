@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<h1>Statut des tests par ID</h1>
+
+<table border="1">
+    <tr>
+        <th>Test ID</th>
+        <th>OK</th>
+        <th>KO</th>
+        <th>UNTESTED</th>
+    </tr>
+    <tr th:each="entry : ${stats}">
+        <td th:text="${entry.key}">ID</td>
+        <td th:text="${entry.value['OK']}">OK</td>
+        <td th:text="${entry.value['KO']}">KO</td>
+        <td th:text="${entry.value['UNTESTED']}">UNTESTED</td>
+    </tr>
+</table>
+
+<h2>Camembert global des statuts</h2>
+<canvas id="pieChart" width="600" height="600"></canvas>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let stats = [[${stats}]];
+    let totalOK = 0;
+    let totalKO = 0;
+    let totalUntested = 0;
+
+    for (let key in stats) {
+        totalOK += stats[key]['OK'];
+        totalKO += stats[key]['KO'];
+        totalUntested += stats[key]['UNTESTED'];
+    }
+
+    const pieData = {
+        labels: ['OK', 'KO', 'UNTESTED'],
+        datasets: [{
+            label: 'Répartition globale',
+            data: [totalOK, totalKO, totalUntested],
+            backgroundColor: ['green', 'red', 'gray']
+        }]
+    };
+
+    const pieConfig = {
+        type: 'pie',
+        data: pieData,
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Camembert des statuts (global)'
+                }
+            }
+        }
+    };
+
+    new Chart(document.getElementById('pieChart'), pieConfig);
+    /*]]>*/
+</script>
+
+</body>
+</html>

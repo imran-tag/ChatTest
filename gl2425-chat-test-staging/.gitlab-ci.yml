@@ -1,0 +1,77 @@
+image: maven:3.9.5-amazoncorretto-21
+
+# task setting up maven properties
+before_script:
+  - echo '<settings
+    xmlns="https://maven.apache.org/SETTINGS/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://maven.apache.org/SETTINGS/1.0.0
+    https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <mirrors>
+    <mirror>
+    <id>ensisa</id>
+    <name>Nexus ENSISA</name>
+    <url>https://nexus.cluster.ensisa.uha.fr/repository/maven-public/</url>
+    <mirrorOf>*</mirrorOf>
+    </mirror>
+    </mirrors>
+    </settings>' > settings.xml
+
+variables:
+  MAVEN_CLI_OPTS: "--batch-mode -s settings.xml -Dmaven.repo.local=libs"
+
+cache:
+  paths:
+    - "libs" # jars downloaded and installed by Maven
+    - "**/target" # results of Maven commands
+
+stages:
+  - build
+  - test
+  - install
+  - deploy
+
+
+compile:
+  stage: build
+  script:
+    - mvn $MAVEN_CLI_OPTS clean compile
+
+test:
+  stage: test
+  script:
+    - mvn $MAVEN_CLI_OPTS test
+  artifacts: # results of the stage
+    paths:
+      - "**/target/surefire-reports/*"
+      - "**/target/jacoco.exec"
+    reports:
+      junit:
+        - "**/target/surefire-reports/TEST-*.xml"
+  coverage: '/Jacoco Coverage:\s+\d+[,\.]?\d+\s+\%/'
+
+install:
+  stage: install
+  script:
+    - mvn $MAVEN_CLI_OPTS clean compile install
+
+deploy-docker:
+  stage: deploy
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [ "" ]
+  script:
+    - WARFILE=$(find . -name '*.war' -path '*/target/*' -print0)
+    # Check https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - alias build='/kaniko/executor --cleanup --registry-mirror docker.cluster.ensisa.uha.fr --context $CI_PROJECT_DIR'
+    - |
+      echo "FROM jetty:11.0-jre21
+      EXPOSE 8080
+      ADD $WARFILE \${JETTY_BASE}/webapps/${CI_PROJECT_NAMESPACE}-${CI_PROJECT_NAME}.war" > Dockerfile
+    - build --destination "$CI_REGISTRY_IMAGE:${CI_COMMIT_TAG:-latest}"
+  only:
+    - main
+    - developpement
+    - staging
