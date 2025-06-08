@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TestExecution.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatest-models</a> &gt; <a href="index.source.html" class="el_package">fr.uha.ensisa.gl.chatest</a> &gt; <span class="el_source">TestExecution.java</span></div><h1>TestExecution.java</h1><pre class="source lang-java linenums">package fr.uha.ensisa.gl.chatest;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+public class TestExecution {
+    private Long id;
+    private Long testId;
+    private String testName;
+    private Date executionDate;
+    private String status; // &quot;PASSED&quot; or &quot;FAILED&quot;
+    private String comment;
+<span class="fc" id="L14">    private List&lt;StepResult&gt; stepResults = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L16">    public TestExecution() {</span>
+<span class="fc" id="L17">        this.executionDate = new Date();</span>
+<span class="fc" id="L18">    }</span>
+
+<span class="fc" id="L20">    public TestExecution(Long testId, String testName, String status) {</span>
+<span class="fc" id="L21">        this.testId = testId;</span>
+<span class="fc" id="L22">        this.testName = testName;</span>
+<span class="fc" id="L23">        this.status = status;</span>
+<span class="fc" id="L24">        this.executionDate = new Date();</span>
+<span class="fc" id="L25">    }</span>
+
+    // Inner class to store step results
+    public static class StepResult {
+        private Long stepId;
+        private String stepName;
+        private String status; // &quot;OK&quot; or &quot;KO&quot;
+        private String comment;
+
+<span class="fc" id="L34">        public StepResult() {</span>
+<span class="fc" id="L35">        }</span>
+
+<span class="fc" id="L37">        public StepResult(Long stepId, String stepName, String status, String comment) {</span>
+<span class="fc" id="L38">            this.stepId = stepId;</span>
+<span class="fc" id="L39">            this.stepName = stepName;</span>
+<span class="fc" id="L40">            this.status = status;</span>
+<span class="fc" id="L41">            this.comment = comment;</span>
+<span class="fc" id="L42">        }</span>
+
+        public Long getStepId() {
+<span class="fc" id="L45">            return stepId;</span>
+        }
+
+        public void setStepId(Long stepId) {
+<span class="fc" id="L49">            this.stepId = stepId;</span>
+<span class="fc" id="L50">        }</span>
+
+        public String getStepName() {
+<span class="fc" id="L53">            return stepName;</span>
+        }
+
+        public void setStepName(String stepName) {
+<span class="fc" id="L57">            this.stepName = stepName;</span>
+<span class="fc" id="L58">        }</span>
+
+        public String getStatus() {
+<span class="fc" id="L61">            return status;</span>
+        }
+
+        public void setStatus(String status) {
+<span class="fc" id="L65">            this.status = status;</span>
+<span class="fc" id="L66">        }</span>
+
+        public String getComment() {
+<span class="fc" id="L69">            return comment;</span>
+        }
+
+        public void setComment(String comment) {
+<span class="fc" id="L73">            this.comment = comment;</span>
+<span class="fc" id="L74">        }</span>
+    }
+
+    // Method to add a step result
+    public void addStepResult(StepResult stepResult) {
+<span class="fc" id="L79">        this.stepResults.add(stepResult);</span>
+<span class="fc" id="L80">    }</span>
+
+    // Method to add a step result from a ChatStep
+    public void addStepResult(ChatStep step) {
+<span class="fc" id="L84">        StepResult result = new StepResult(</span>
+<span class="fc" id="L85">            step.getId(),</span>
+<span class="fc" id="L86">            step.getName(),</span>
+<span class="fc" id="L87">            step.getStatus(),</span>
+<span class="fc" id="L88">            step.getComment()</span>
+        );
+<span class="fc" id="L90">        this.stepResults.add(result);</span>
+<span class="fc" id="L91">    }</span>
+
+    // Getters and setters
+    public Long getId() {
+<span class="fc" id="L95">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="fc" id="L99">        this.id = id;</span>
+<span class="fc" id="L100">    }</span>
+
+    public Long getTestId() {
+<span class="fc" id="L103">        return testId;</span>
+    }
+
+    public void setTestId(Long testId) {
+<span class="fc" id="L107">        this.testId = testId;</span>
+<span class="fc" id="L108">    }</span>
+
+    public String getTestName() {
+<span class="fc" id="L111">        return testName;</span>
+    }
+
+    public void setTestName(String testName) {
+<span class="fc" id="L115">        this.testName = testName;</span>
+<span class="fc" id="L116">    }</span>
+
+    public Date getExecutionDate() {
+<span class="fc" id="L119">        return executionDate;</span>
+    }
+
+    public void setExecutionDate(Date executionDate) {
+<span class="fc" id="L123">        this.executionDate = executionDate;</span>
+<span class="fc" id="L124">    }</span>
+
+    public String getStatus() {
+<span class="fc" id="L127">        return status;</span>
+    }
+
+    public void setStatus(String status) {
+<span class="fc" id="L131">        this.status = status;</span>
+<span class="fc" id="L132">    }</span>
+
+    public String getComment() {
+<span class="fc" id="L135">        return comment;</span>
+    }
+
+    public void setComment(String comment) {
+<span class="fc" id="L139">        this.comment = comment;</span>
+<span class="fc" id="L140">    }</span>
+
+    public List&lt;StepResult&gt; getStepResults() {
+<span class="fc" id="L143">        return stepResults;</span>
+    }
+
+    public void setStepResults(List&lt;StepResult&gt; stepResults) {
+<span class="fc" id="L147">        this.stepResults = stepResults;</span>
+<span class="fc" id="L148">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
