@@ -10,7 +10,7 @@ before_script:
     <mirrors>
     <mirror>
     <id>ensisa</id>
-    <name>Nexus ENSISA</name>
+    <n>Nexus ENSISA</n>
     <url>https://nexus.cluster.ensisa.uha.fr/repository/maven-public/</url>
     <mirrorOf>*</mirrorOf>
     </mirror>
@@ -28,9 +28,9 @@ cache:
 stages:
   - build
   - test
+  - integration-test
   - install
   - deploy
-
 
 compile:
   stage: build
@@ -49,6 +49,83 @@ test:
       junit:
         - "**/target/surefire-reports/TEST-*.xml"
   coverage: '/Jacoco Coverage:\s+\d+[,\.]?\d+\s+\%/'
+
+integration-test:
+  stage: integration-test
+  image: maven:3.9.5-amazoncorretto-21
+  services:
+    - name: selenium/standalone-firefox:4.11.0-20230801
+      alias: selenium
+      command: ["/opt/bin/entry_point.sh"]
+  variables:
+    # Selenium configuration
+    HUB_HOST: selenium
+    HUB_PORT: 4444
+    # Firefox configuration for headless mode
+    SE_OPTS: "--no-sandbox --disable-dev-shm-usage"
+  before_script:
+    # Setup Maven settings
+    - echo '<settings
+      xmlns="https://maven.apache.org/SETTINGS/1.0.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://maven.apache.org/SETTINGS/1.0.0
+      https://maven.apache.org/xsd/settings-1.0.0.xsd">
+      <mirrors>
+      <mirror>
+      <id>ensisa</id>
+      <n>Nexus ENSISA</n>
+      <url>https://nexus.cluster.ensisa.uha.fr/repository/maven-public/</url>
+      <mirrorOf>*</mirrorOf>
+      </mirror>
+      </mirrors>
+      </settings>' > settings.xml
+    # Install network tools for debugging
+    - apt-get update -qq && apt-get install -y -qq curl netcat-openbsd wget
+    # Debug network connectivity
+    - echo "=== Network Debug ==="
+    - hostname -I || echo "hostname failed"
+    - ping -c 2 selenium || echo "ping failed"
+    - nc -zv selenium 4444 || echo "netcat failed"
+    # Wait for Selenium with better error handling
+    - |
+      echo "Waiting for Selenium Grid to be ready..."
+      for i in {1..60}; do
+        if curl -s http://selenium:4444/wd/hub/status | grep -q '"ready":true'; then
+          echo "✓ Selenium Grid is ready after $i attempts"
+          break
+        elif [ $i -eq 60 ]; then
+          echo "✗ Selenium Grid failed to start after 60 attempts"
+          curl -v http://selenium:4444/wd/hub/status || true
+          exit 1
+        else
+          echo "Attempt $i: Waiting for Selenium Grid..."
+          sleep 2
+        fi
+      done
+    # Show Selenium status
+    - curl -s http://selenium:4444/wd/hub/status | jq . || echo "jq not available"
+  script:
+    # Build everything first
+    - mvn $MAVEN_CLI_OPTS clean install -DskipTests=true
+    # Run integration tests with proper system properties
+    - |
+      cd chatest-app
+      mvn --batch-mode -s ../settings.xml -Dmaven.repo.local=../libs verify \
+        -DskipTests=true \
+        -Dselenium.remote.browser=firefox \
+        -Dhost=localhost \
+        -Dservlet.port=8080 \
+        -Dfailsafe.rerunFailingTestsCount=2
+  artifacts:
+    when: always
+    paths:
+      - "**/target/failsafe-reports/*"
+      - "**/target/site/jacoco/*"
+      - "**/target/surefire-reports/*"
+    reports:
+      junit:
+        - "**/target/failsafe-reports/TEST-*.xml"
+    expire_in: 1 week
 
 install:
   stage: install
