@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: fr.uha.ensisa.gl.chatest.it.TestExecutionHistoryIT
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.090 s <<< FAILURE! -- in fr.uha.ensisa.gl.chatest.it.TestExecutionHistoryIT
+fr.uha.ensisa.gl.chatest.it.TestExecutionHistoryIT -- Time elapsed: 0.090 s <<< ERROR!
+java.lang.IllegalStateException: Cannot find geckodriver on [C:\Program Files\Java\jdk-23\bin, C:\Program Files\Common Files\Oracle\Java\javapath, C:\Program Files (x86)\Common Files\Oracle\Java\java8path, C:\Program Files (x86)\Common Files\Oracle\Java\javapath, C:\Program Files\ImageMagick-7.1.1-Q16-HDRI, C:\WINDOWS\system32, C:\WINDOWS, C:\WINDOWS\System32\Wbem, C:\WINDOWS\System32\WindowsPowerShell\v1.0\, C:\WINDOWS\System32\OpenSSH\, C:\Program Files\dotnet\, C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL, C:\Program Files\Intel\Intel(R) Management Engine Components\DAL, C:\Users\XPS\AppData\Local\Programs\Python\Python313\python.exe, C:\Program Files\Git\cmd, C:\Program Files\nodejs\, C:\ProgramData\chocolatey\bin, C:\Program Files\Docker\Docker\resources\bin, C:\Users\XPS\AppData\Local\Programs\Eclipse Adoptium\jdk-21.0.5.11-hotspot\bin, C:\Users\XPS\AppData\Local\Programs\Python\Python313\python.exe, C:\Users\XPS\AppData\Local\Programs\Python\Launcher\, C:\Users\XPS\AppData\Local\Microsoft\WindowsApps, C:\Program Files\JetBrains\PyCharm Community Edition 2024.2.4\bin, C:\Users\XPS\AppData\Local\Programs\Microsoft VS Code\bin, C:\Program Files\JetBrains\PyCharm 2024.3\bin, C:\Users\XPS\Downloads\apache-maven-3.9.9\bin, C:\Users\XPS\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-7.1-full_build\bin, C:\Program Files\JetBrains\IntelliJ IDEA 2024.3.1.1\bin, C:\Users\XPS\AppData\Roaming\npm, C:\Users\XPS\AppData\Local\spicetify, C:\Users\XPS\Downloads\Flutter\flutter\bin]
+	at fr.uha.ensisa.gl.chatest.it.TestExecutionHistoryIT.setupLocalFirefoxDriver(TestExecutionHistoryIT.java:188)
+	at fr.uha.ensisa.gl.chatest.it.TestExecutionHistoryIT.setupWebDriver(TestExecutionHistoryIT.java:56)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:578)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

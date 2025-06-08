@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: fr.uha.ensisa.gl.chatest.controller.Tests.TestCreateControllerTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.174 s -- in fr.uha.ensisa.gl.chatest.controller.Tests.TestCreateControllerTest

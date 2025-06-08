@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Create a new test</title>
 
-    <script src="/resources/js/test/create.js"></script>
+    <script th:src="@{/resources/js/test/create.js}"></script>
 </head>
 <body>
 <form method="post" onsubmit="formSubmit(event)" th:action="@{/test/create}" accept-charset="utf-8">
@@ -23,7 +23,7 @@
 
     <input type="submit" value="Create">
 
-    <a href="/test/list">back</a>
+    <a th:href="@{/test/list}">back</a>
 </form>
 </body>
 </html>

@@ -19,6 +19,10 @@
     </parent>
 
     <properties>
+        <skip.integration.tests>false</skip.integration.tests>
+    <skip.tests>false</skip.tests>
+    <selenium.remote.browser></selenium.remote.browser>
+    <host>localhost</host>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <servlet.port>8080</servlet.port>
@@ -69,11 +73,23 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>4.21.0</version>
-            <scope>test</scope>
-        </dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>4.15.0</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-remote-driver</artifactId>
+    <version>4.15.0</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-firefox-driver</artifactId>
+    <version>4.15.0</version>
+    <scope>test</scope>
+</dependency>
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
@@ -188,20 +204,61 @@
         <finalName>${project.name}</finalName>
         <plugins>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>11.0.16</version>
-                <configuration>
-                    <httpConnector>
-                        <port>${servlet.port}</port>
-                    </httpConnector>
-                    <stopKey>quit</stopKey>
-                    <stopPort>${jetty.stop.port}</stopPort>
-                    <webApp>
-                        <contextPath>/</contextPath>
-                    </webApp>
-                </configuration>
-            </plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-failsafe-plugin</artifactId>
+    <version>3.0.0</version>
+    <configuration>
+        <includes>
+            <include>**/*IT.java</include>
+        </includes>
+        <systemPropertyVariables>
+            <selenium.remote.browser>${selenium.remote.browser}</selenium.remote.browser>
+            <host>${host}</host>
+            <servlet.port>${servlet.port}</servlet.port>
+        </systemPropertyVariables>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+            <plugin>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-maven-plugin</artifactId>
+    <version>11.0.16</version>
+    <configuration>
+        <httpConnector>
+            <port>${servlet.port}</port>
+        </httpConnector>
+        <stopKey>quit</stopKey>
+        <stopPort>${jetty.stop.port}</stopPort>
+        <stopWait>5</stopWait>
+        <webApp>
+            <contextPath>/</contextPath>
+        </webApp>
+        <skip>${skip.integration.tests}</skip>
+    </configuration>
+    <executions>
+        <execution>
+            <id>start-jetty</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+                <goal>start</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>stop-jetty</id>
+            <phase>post-integration-test</phase>
+            <goals>
+                <goal>stop</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

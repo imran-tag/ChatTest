@@ -8,7 +8,6 @@
     <ul>
         <li th:each="group : ${groups}" th:text="${group.name} + ' - ' + ${group.description}"></li>
     </ul>
-    <a href="/test/group/create">Create New Group</a>
+    <a th:href="@{/test/group/create}">Create New Group</a>
 </body>
 </html>
- 

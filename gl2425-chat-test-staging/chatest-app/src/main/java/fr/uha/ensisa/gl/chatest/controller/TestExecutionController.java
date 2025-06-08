@@ -1,5 +1,6 @@
 package fr.uha.ensisa.gl.chatest.controller;
 
+import fr.uha.ensisa.gl.chatest.ChatStep;
 import fr.uha.ensisa.gl.chatest.ChatTest;
 import fr.uha.ensisa.gl.chatest.TestExecution;
 import fr.uha.ensisa.gl.chatest.dao.chatest.IDaoFactory;
@@ -8,8 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/test/history")
@@ -52,11 +54,23 @@ public class TestExecutionController {
 
         // Get the test details
         ChatTest test = daoFactory.getTestDao().find(execution.getTestId());
+        if (test == null) {
+            return "redirect:/test/history";
+        }
         
         // If the execution doesn't have step results (older executions before this update),
         // display a message to the user
         if (execution.getStepResults() == null || execution.getStepResults().isEmpty()) {
             model.addAttribute("noStepResults", true);
+        } else {
+            // Create a map for easy lookup of step results by step ID
+            Map<Long, TestExecution.StepResult> stepResultMap = new HashMap<>();
+            for (TestExecution.StepResult result : execution.getStepResults()) {
+                if (result.getStepId() != null) {
+                    stepResultMap.put(result.getStepId(), result);
+                }
+            }
+            model.addAttribute("stepResultMap", stepResultMap);
         }
         
         model.addAttribute("execution", execution);

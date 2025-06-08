@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Test Execution Details</title>
-    <link rel="stylesheet" href="/libs/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/libs/bootstrap.min.css}">
 </head>
 <body>
 <div class="container">
     <h1 class="mt-4 mb-4">Test Execution Details</h1>
     
     <div class="mb-3">
-        <a href="/test/history" class="btn btn-primary">Back to History</a>
+        <a th:href="@{/test/history}" class="btn btn-primary">Back to History</a>
         <a th:href="@{/test/history/test/{id}(id=${test.id})}" class="btn btn-info">View All Test Runs</a>
         <a th:href="@{/test/run/{id}/0(id=${test.id})}" class="btn btn-success">Run Test Again</a>
     </div>
@@ -50,40 +50,59 @@
             <p><strong>Description:</strong> <span th:text="${test.description}"></span></p>
             
             <h4 class="mt-4">Test Steps (Execution Results)</h4>
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Step Name</th>
-                    <th>Status</th>
-                    <th>Comment</th>
-                </tr>
-                </thead>
-                <tbody>
-                <!-- Show each step with its status from the execution results -->
-                <tr th:each="step, stepStat : ${test.step}">
-                    <td th:text="${stepStat.count}"></td>
-                    <td th:text="${step.name}"></td>
-                    <td>
-                        <!-- Find the matching step result from the execution -->
-                        <span th:with="stepResult=${execution.stepResults.stream().filter(sr -> sr.getStepId() == step.id).findFirst().orElse(null)}">
-                            <span th:if="${stepResult != null && stepResult.getStatus() == 'OK'}" class="badge bg-success">OK</span>
-                            <span th:if="${stepResult != null && stepResult.getStatus() == 'KO'}" class="badge bg-danger">KO</span>
-                            <span th:if="${stepResult == null}" class="badge bg-secondary">Not Run</span>
-                        </span>
-                    </td>
-                    <td>
-                        <!-- Find the matching step result from the execution for the comment -->
-                        <span th:with="stepResult=${execution.stepResults.stream().filter(sr -> sr.getStepId() == step.id).findFirst().orElse(null)}">
-                            <span th:text="${stepResult != null && stepResult.getComment() != null ? stepResult.getComment() : '-'}"></span>
-                        </span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            
+            <!-- Check if we have step results -->
+            <div th:if="${noStepResults}" class="alert alert-info">
+                <p><strong>Note:</strong> This execution was created before step-by-step tracking was implemented. 
+                   Step details are not available for this execution.</p>
+                <p>Overall result: 
+                    <span th:if="${execution.status == 'PASSED'}" class="badge bg-success">PASSED</span>
+                    <span th:if="${execution.status == 'FAILED'}" class="badge bg-danger">FAILED</span>
+                </p>
+            </div>
+            
+            <!-- Show step details if available -->
+            <div th:unless="${noStepResults}">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Step Name</th>
+                        <th>Status</th>
+                        <th>Comment</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Show each step with its status from the execution results -->
+                    <tr th:each="step, stepStat : ${test.step}">
+                        <td th:text="${stepStat.count}"></td>
+                        <td th:text="${step.name}"></td>
+                        <td>
+                            <!-- Use the step result map for simple lookup -->
+                            <th:block th:if="${stepResultMap != null and stepResultMap.containsKey(step.id)}">
+                                <th:block th:with="result=${stepResultMap.get(step.id)}">
+                                    <span th:if="${result.status == 'OK'}" class="badge bg-success">OK</span>
+                                    <span th:if="${result.status == 'KO'}" class="badge bg-danger">KO</span>
+                                </th:block>
+                            </th:block>
+                            <span th:unless="${stepResultMap != null and stepResultMap.containsKey(step.id)}" class="badge bg-secondary">Not Run</span>
+                        </td>
+                        <td>
+                            <!-- Use the step result map for comment lookup -->
+                            <th:block th:if="${stepResultMap != null and stepResultMap.containsKey(step.id)}">
+                                <th:block th:with="result=${stepResultMap.get(step.id)}">
+                                    <span th:text="${result.comment != null ? result.comment : '-'}"></span>
+                                </th:block>
+                            </th:block>
+                            <span th:unless="${stepResultMap != null and stepResultMap.containsKey(step.id)}">-</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
-<script src="/libs/bootstrap.bundle.min.js"></script>
+<script th:src="@{/libs/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

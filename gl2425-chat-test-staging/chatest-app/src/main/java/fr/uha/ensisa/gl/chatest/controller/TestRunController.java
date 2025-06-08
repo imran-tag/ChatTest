@@ -46,6 +46,7 @@ public class TestRunController {
             currentExecution = new TestExecution();
             currentExecution.setTestId(testId);
             currentExecution.setTestName(test.getName());
+            currentExecution.setExecutionDate(new Date());
             
             // Reset all step statuses for display purposes
             for (ChatStep step : steps) {
@@ -64,49 +65,72 @@ public class TestRunController {
     }
 
     @PostMapping("/{id}/{stepIndex}/validate")
-
-public String validateStep(@PathVariable("id") Long testId,@PathVariable("stepIndex") int stepIndex, String result,@RequestParam(value = "comment", required = false) String comment) {
-    ChatTest test = daoFactory.getTestDao().find(testId);
-    if (test == null) {
-        return "redirect:/test/list";
-    }
-    
-    if (stepIndex < 0 || stepIndex >= test.getStep().size()) {
-        return "redirect:/test/list";
-    }
-    
-    // Set the comment on the step if provided
-    if (comment != null && !comment.trim().isEmpty()) {
-        test.getStep().get(stepIndex).setComment(comment);
-    }
-    
-    if ("KO".equals(result)) {
-        // Step failed - create failed execution
-        TestExecution execution = new TestExecution();
-        execution.setTestId(testId);
-        execution.setTestName(test.getName());
-        execution.setStatus("FAILED");
-        execution.setExecutionDate(new Date());
-        execution.setComment("Failed at step " + (stepIndex + 1));
+    public String validateStep(
+            @PathVariable("id") Long testId,
+            @PathVariable("stepIndex") int stepIndex, 
+            @RequestParam("status") String result,
+            @RequestParam(value = "comment", required = false) String comment) {
         
-        daoFactory.getTestExecutionDao().persist(execution);
-        return "redirect:/test/history/test/" + testId;
-    }
-    
-    // Step passed
-    if (stepIndex == test.getStep().size() - 1) {
-        // Last step - create passed execution
-        TestExecution execution = new TestExecution();
-        execution.setTestId(testId);
-        execution.setTestName(test.getName());
-        execution.setStatus("PASSED");
-        execution.setExecutionDate(new Date());
+        ChatTest test = daoFactory.getTestDao().find(testId);
+        if (test == null) {
+            return "redirect:/test/list";
+        }
         
-        daoFactory.getTestExecutionDao().persist(execution);
-        return "redirect:/test/history/test/" + testId;
-    } else {
-        // Not last step - continue to next step
-        return "redirect:/test/run/" + testId + "/" + (stepIndex + 1);
+        if (stepIndex < 0 || stepIndex >= test.getStep().size()) {
+            return "redirect:/test/list";
+        }
+        
+        // Get the current step
+        ChatStep currentStep = test.getStep().get(stepIndex);
+        
+        // Set the step status and comment
+        currentStep.setStatus(result);
+        if (comment != null && !comment.trim().isEmpty()) {
+            currentStep.setComment(comment.trim());
+        }
+        
+        // Add step result to the current execution
+        if (currentExecution != null) {
+            currentExecution.addStepResult(currentStep);
+        }
+        
+        // Check if the step failed (KO)
+        if ("KO".equals(result)) {
+            // Step failed - finalize the test execution as FAILED and stop
+            if (currentExecution != null) {
+                currentExecution.setStatus("FAILED");
+                currentExecution.setComment("Failed at step " + (stepIndex + 1) + ": " + currentStep.getName());
+                
+                // Persist the failed execution
+                daoFactory.getTestExecutionDao().persist(currentExecution);
+                
+                // Clear the current execution
+                currentExecution = null;
+            }
+            
+            // Redirect to test history to show the failed result
+            return "redirect:/test/history/test/" + testId;
+        }
+        
+        // Step passed (OK)
+        if (stepIndex == test.getStep().size() - 1) {
+            // Last step and it passed - finalize the test execution as PASSED
+            if (currentExecution != null) {
+                currentExecution.setStatus("PASSED");
+                currentExecution.setComment("All steps completed successfully");
+                
+                // Persist the successful execution
+                daoFactory.getTestExecutionDao().persist(currentExecution);
+                
+                // Clear the current execution
+                currentExecution = null;
+            }
+            
+            // Redirect to test history to show the successful result
+            return "redirect:/test/history/test/" + testId;
+        } else {
+            // Not the last step and it passed - continue to next step
+            return "redirect:/test/run/" + testId + "/" + (stepIndex + 1);
+        }
     }
-}
 }

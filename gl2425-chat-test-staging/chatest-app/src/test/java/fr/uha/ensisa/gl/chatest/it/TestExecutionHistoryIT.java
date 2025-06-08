@@ -1,148 +1,285 @@
 package fr.uha.ensisa.gl.chatest.it;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.stream.Collectors;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
+import org.junit.jupiter.api.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+import java.net.URL;
+import java.time.Duration;
+import java.util.List;
 
 public class TestExecutionHistoryIT {
-    /*
-    private static String port;
+    
+    public static WebDriver driver;
+    private static String host, port;
+    private static WebDriverWait wait;
 
     @BeforeAll
-    public static void findPort() {
+    public static void setupWebDriver() {
+        if (driver != null) return;
+        
+        host = System.getProperty("host", "localhost");
         port = System.getProperty("servlet.port", "8080");
-    }
-
-    @Test
-    public void testHistoryPageLoads() throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:" + port + "/test/history").openConnection();
-        connection.connect();
         
-        assertEquals(200, connection.getResponseCode());
+        System.out.println("=== WebDriver Setup Debug Info ===");
+        System.out.println("Host: " + host);
+        System.out.println("Port: " + port);
+        System.out.println("Base URL: " + getBaseUrl());
         
-        try (InputStream in = connection.getInputStream()) {
-            String output = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining("\n"));
-            assertTrue(output.contains("Test Execution History"), "History page should contain title");
-            assertTrue(output.contains("Back to Test List"), "History page should contain back link");
+        // Check for selenium.remote.browser property
+        String remoteProperty = System.getProperty("selenium.remote.browser");
+        System.out.println("selenium.remote.browser property: " + remoteProperty);
+        
+        // Detect CI environment
+        boolean isCI = detectCIEnvironment();
+        System.out.println("CI Environment detected: " + isCI);
+        
+        if (isCI || "firefox".equals(remoteProperty)) {
+            System.out.println("Using Remote WebDriver (CI mode)");
+            setupRemoteWebDriver();
+        } else {
+            System.out.println("Using Local WebDriver (Development mode)");
+            setupLocalFirefoxDriver();
         }
+        
+        wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        System.out.println("WebDriver setup completed successfully");
     }
-
-    @Test
-    public void testHistoryPageContainsBootstrapElements() throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:" + port + "/test/history").openConnection();
-        connection.connect();
-        
-        assertEquals(200, connection.getResponseCode());
-        
-        try (InputStream in = connection.getInputStream()) {
-            String output = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining("\n"));
-            assertTrue(output.contains("bootstrap.min.css"), "Page should include Bootstrap CSS");
-            assertTrue(output.contains("container"), "Page should use Bootstrap container class");
-            assertTrue(output.contains("card"), "Page should contain Bootstrap card elements");
-        }
+    
+    private static boolean detectCIEnvironment() {
+        return System.getenv("GITLAB_CI") != null || 
+               "true".equals(System.getenv("CI")) ||
+               new File("/.dockerenv").exists() ||
+               "root".equals(System.getProperty("user.name"));
     }
-
-    @Test
-    public void testTestListPageLoads() throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:" + port + "/test/list").openConnection();
-        connection.connect();
-        
-        assertEquals(200, connection.getResponseCode());
-        
-        try (InputStream in = connection.getInputStream()) {
-            String output = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining("\n"));
-            assertTrue(output.contains("Test List"), "Test list page should contain title");
-            assertTrue(output.contains("Create a new test"), "Test list page should contain create link");
-            assertTrue(output.contains("View Test Execution History"), "Test list page should contain history link");
-        }
-    }
-
-    @Test
-    public void testRootRedirectsToTestList() throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:" + port + "/").openConnection();
-        connection.setInstanceFollowRedirects(false); // Don't follow redirects automatically
-        connection.connect();
-        
-        // Should get a redirect response
-        int responseCode = connection.getResponseCode();
-        assertTrue(responseCode == 302 || responseCode == 301, "Root should redirect");
-        
-        String location = connection.getHeaderField("Location");
-        assertTrue(location.contains("/test/list"), "Should redirect to test list");
-    }
-
-    @Test
-    public void testHistoryPageWithNoExecutions() throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:" + port + "/test/history").openConnection();
-        connection.connect();
-        
-        assertEquals(200, connection.getResponseCode());
-        
-        try (InputStream in = connection.getInputStream()) {
-            String output = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining("\n"));
-            // Since we're using in-memory storage, there should be no executions initially
-            assertTrue(output.contains("No test executions found") || output.contains("Execution History"), 
-                      "History page should handle empty state gracefully");
-        }
-    }
-
-    @Test
-    public void testCreateTestPageLoads() throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:" + port + "/test/create").openConnection();
-        connection.connect();
-        
-        assertEquals(200, connection.getResponseCode());
-        
-        try (InputStream in = connection.getInputStream()) {
-            String output = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining("\n"));
-            assertTrue(output.contains("Create a new test"), "Create page should contain title");
-            assertTrue(output.contains("name"), "Create page should contain name input");
-            assertTrue(output.contains("description"), "Create page should contain description input");
-        }
-    }
-
-    @Test
-    public void testHelloPageWithParameter() throws IOException {
-        String testName = "HistoryTest";
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:" + port + "/hello?name=" + testName).openConnection();
-        connection.connect();
-        
-        assertEquals(200, connection.getResponseCode());
-        
-        try (InputStream in = connection.getInputStream()) {
-            String output = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining("\n"));
-            assertTrue(output.contains(testName), "Hello page should contain the provided name: " + testName);
-            assertTrue(output.contains("Hello"), "Hello page should contain greeting");
-        }
-    }
-
-    @Test
-    public void testHistoryPageStructure() throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:" + port + "/test/history").openConnection();
-        connection.connect();
-        
-        assertEquals(200, connection.getResponseCode());
-        
-        try (InputStream in = connection.getInputStream()) {
-            String output = new BufferedReader(new InputStreamReader(in)).lines().collect(Collectors.joining("\n"));
+    
+    private static void setupRemoteWebDriver() {
+        try {
+            // Configure Firefox options for remote execution
+            FirefoxOptions options = new FirefoxOptions();
+            options.addArguments("--headless");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--window-size=1920,1080");
+            options.addArguments("--disable-extensions");
+            options.addArguments("--disable-web-security");
             
-            // Check for key structural elements
-            assertTrue(output.contains("Execution History"), "Should contain history section");
-            assertTrue(output.contains("Failed tests first"), "Should mention sorting by failed tests");
-            assertTrue(output.contains("btn"), "Should contain Bootstrap button classes");
+            // Set capabilities for better compatibility
+            DesiredCapabilities capabilities = new DesiredCapabilities();
+            capabilities.setBrowserName("firefox");
+            capabilities.setCapability("browserName", "firefox");
+            capabilities.setCapability("version", "");
+            capabilities.setCapability("platform", "LINUX");
+            capabilities.setCapability("acceptSslCerts", true);
+            capabilities.setCapability("acceptInsecureCerts", true);
+            options.merge(capabilities);
             
-            // Check for empty state message since we start with no executions
-            assertTrue(output.contains("No test executions found") || output.contains("table"), 
-                      "Should show empty state message or table if executions exist");
+            String seleniumUrl = "http://selenium:4444/wd/hub";
+            System.out.println("Connecting to Selenium Remote at: " + seleniumUrl);
+            
+            // Create RemoteWebDriver with retries
+            boolean connected = false;
+            Exception lastException = null;
+            
+            for (int attempt = 1; attempt <= 3; attempt++) {
+                try {
+                    System.out.println("Connection attempt " + attempt + "/3");
+                    
+                    // Verify Selenium is ready
+                    URL statusUrl = new URL(seleniumUrl + "/status");
+                    java.net.HttpURLConnection conn = (java.net.HttpURLConnection) statusUrl.openConnection();
+                    conn.setConnectTimeout(5000);
+                    conn.setReadTimeout(5000);
+                    conn.connect();
+                    
+                    if (conn.getResponseCode() == 200) {
+                        System.out.println("Selenium status check passed");
+                    } else {
+                        System.out.println("Selenium status check failed: " + conn.getResponseCode());
+                        continue;
+                    }
+                    
+                    // Create the WebDriver
+                    driver = new RemoteWebDriver(new URL(seleniumUrl), options);
+                    
+                    // Test the connection by getting session info
+                    String sessionId = ((RemoteWebDriver) driver).getSessionId().toString();
+                    System.out.println("✓ Remote WebDriver session created: " + sessionId);
+                    
+                    connected = true;
+                    break;
+                    
+                } catch (Exception e) {
+                    System.err.println("Attempt " + attempt + " failed: " + e.getMessage());
+                    lastException = e;
+                    
+                    if (driver != null) {
+                        try {
+                            driver.quit();
+                        } catch (Exception cleanup) {
+                            // Ignore cleanup errors
+                        }
+                        driver = null;
+                    }
+                    
+                    if (attempt < 3) {
+                        try {
+                            Thread.sleep(5000); // Wait 5 seconds before retry
+                        } catch (InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (!connected) {
+                throw new RuntimeException("Failed to connect to Selenium after 3 attempts. Last error: " + 
+                    (lastException != null ? lastException.getMessage() : "Unknown"));
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Failed to initialize remote WebDriver: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Remote WebDriver initialization failed", e);
         }
-    }*/
+    }
+    
+    private static void setupLocalFirefoxDriver() {
+        String ext = System.getProperty("os.name", "")
+                .toLowerCase().startsWith("win") ? ".exe" : "";
+        String geckodrivername = "geckodriver" + ext;
+        Collection<String> pathes = new ArrayList<>();
+        
+        for (String source : new String[] {
+                System.getProperty("PATH"),
+                System.getenv().get("Path"),
+                System.getenv().get("PATH") }) {
+            if (source != null)
+                pathes.addAll(Arrays.asList(source.trim().split(File.pathSeparator)));
+        }
+        
+        File geckoDriver = null;
+        for (String path : pathes) {
+            File f = new File(path, geckodrivername);
+            if (f.exists() && f.canExecute()) {
+                System.setProperty("webdriver.gecko.driver", f.getAbsolutePath());
+                geckoDriver = f;
+                break;
+            }
+        }
+        
+        if (geckoDriver == null) {
+            throw new IllegalStateException("Cannot find geckodriver on " + pathes.toString());
+        }
+        
+        FirefoxOptions options = new FirefoxOptions();
+        options.addArguments("--headless");
+        
+        driver = new FirefoxDriver(options);
+        System.out.println("Successfully initialized local Firefox WebDriver");
+    }
+
+    @AfterAll
+    public static void shutdownWebDriver() {
+        if (driver != null) {
+            try {
+                driver.quit();
+                System.out.println("WebDriver quit successfully");
+            } catch (Exception e) {
+                System.err.println("Error during WebDriver quit: " + e.getMessage());
+            }
+            driver = null;
+        }
+    }
+
+    public static String getBaseUrl() {
+        return "http://" + host + ":" + port + "/";
+    }
+
+    @BeforeEach
+    public void waitForApplication() {
+        // Give the application a moment to be ready
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @Test
+    @DisplayName("Test that history page loads correctly")
+    public void testHistoryPageLoads() {
+        System.out.println("Testing history page load...");
+        
+        String url = getBaseUrl() + "test/history";
+        System.out.println("Navigating to: " + url);
+        
+        driver.get(url);
+        
+        String title = driver.getTitle();
+        System.out.println("Page title: " + title);
+        assertTrue(title.contains("Test Execution History") || title.contains("History"), 
+                  "History page should contain correct title. Actual title: " + title);
+        
+        WebElement heading = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//h1[contains(text(), 'Test Execution History') or contains(text(), 'History')]")));
+        assertNotNull(heading, "History page should contain main heading");
+        
+        System.out.println("✓ History page loads correctly");
+    }
+
+    @Test
+    @DisplayName("Test that test list page loads correctly")
+    public void testTestListPageLoads() {
+        System.out.println("Testing test list page load...");
+        
+        String url = getBaseUrl() + "test/list";
+        System.out.println("Navigating to: " + url);
+        
+        driver.get(url);
+        
+        String title = driver.getTitle();
+        System.out.println("Page title: " + title);
+        assertTrue(title.contains("Test List") || title.contains("Test"), 
+                  "Test list page should contain title. Actual title: " + title);
+        
+        WebElement heading = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//h1[contains(text(), 'Test List') or contains(text(), 'Test')]")));
+        assertNotNull(heading, "Test list page should contain main heading");
+        
+        System.out.println("✓ Test list page loads correctly");
+    }
+
+    @Test
+    @DisplayName("Test that root redirects to test list")
+    public void testRootRedirectsToTestList() {
+        System.out.println("Testing root redirect...");
+        
+        driver.get(getBaseUrl());
+        
+        wait.until(ExpectedConditions.urlContains("test/list"));
+        
+        String currentUrl = driver.getCurrentUrl();
+        System.out.println("Current URL after redirect: " + currentUrl);
+        assertTrue(currentUrl.contains("test/list"), 
+                  "Root should redirect to test list. Current URL: " + currentUrl);
+        
+        System.out.println("✓ Root redirects correctly");
+    }
 }
