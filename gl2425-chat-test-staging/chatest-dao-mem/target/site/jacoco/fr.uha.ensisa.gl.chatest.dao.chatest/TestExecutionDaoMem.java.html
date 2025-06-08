@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TestExecutionDaoMem.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatest-dao-mem</a> &gt; <a href="index.source.html" class="el_package">fr.uha.ensisa.gl.chatest.dao.chatest</a> &gt; <span class="el_source">TestExecutionDaoMem.java</span></div><h1>TestExecutionDaoMem.java</h1><pre class="source lang-java linenums">package fr.uha.ensisa.gl.chatest.dao.chatest;
+
+import fr.uha.ensisa.gl.chatest.TestExecution;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+<span class="fc" id="L8">public class TestExecutionDaoMem implements ITestExecutionDao {</span>
+<span class="fc" id="L9">    private final Map&lt;Long, TestExecution&gt; store = Collections.synchronizedMap(new TreeMap&lt;&gt;());</span>
+<span class="fc" id="L10">    private long nextId = 0;</span>
+
+    @Override
+    public void persist(TestExecution execution) {
+<span class="nc bnc" id="L14" title="All 2 branches missed.">        if (execution.getId() == null) {</span>
+<span class="nc" id="L15">            execution.setId(nextId++);</span>
+        }
+<span class="nc" id="L17">        store.put(execution.getId(), execution);</span>
+<span class="nc" id="L18">    }</span>
+
+    @Override
+    public void remove(long id) {
+<span class="nc" id="L22">        store.remove(id);</span>
+<span class="nc" id="L23">    }</span>
+
+    @Override
+    public TestExecution find(long id) {
+<span class="nc" id="L27">        return store.get(id);</span>
+    }
+
+    @Override
+    public Collection&lt;TestExecution&gt; findAll() {
+<span class="nc" id="L32">        return store.values();</span>
+    }
+
+    @Override
+    public Collection&lt;TestExecution&gt; findByStatus(String status) {
+<span class="nc" id="L37">        return store.values().stream()</span>
+<span class="nc" id="L38">                .filter(execution -&gt; status.equals(execution.getStatus()))</span>
+<span class="nc" id="L39">                .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public Collection&lt;TestExecution&gt; findByTestId(long testId) {
+<span class="nc" id="L44">        return store.values().stream()</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">                .filter(execution -&gt; execution.getTestId() == testId)</span>
+<span class="nc" id="L46">                .collect(Collectors.toList());</span>
+    }
+
+    @Override
+    public long count() {
+<span class="nc" id="L51">        return store.size();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
