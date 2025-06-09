@@ -1,3 +1,6 @@
 fr\uha\ensisa\gl\chatest\dao\chatest\TestDaoFactory.class
+fr\uha\ensisa\gl\chatest\dao\chatest\TestTestDao.class
+fr\uha\ensisa\gl\chatest\dao\chatest\TestTestGroupDao.class
 fr\uha\ensisa\gl\chatest\dao\chatest\TestFactoryMemTest.class
 fr\uha\ensisa\gl\chatest\dao\chatest\TestDaoMemTest.class
+fr\uha\ensisa\gl\chatest\dao\chatest\TestTestExecutionDaoMem.class

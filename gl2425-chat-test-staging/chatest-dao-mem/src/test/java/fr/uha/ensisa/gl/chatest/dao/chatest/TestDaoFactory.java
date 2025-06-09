@@ -26,4 +26,10 @@ public class TestDaoFactory {
         ITestDao secondCall = daoFactoryMem.getTestDao();
         assertSame(firstCall, secondCall, "The ITestDao instance should be the same across calls.");
     }
+
+    @Test
+    public void testGetTestExecutionDaoReturnsNonNullDao() {
+        ITestExecutionDao testExecutionDao = daoFactoryMem.getTestExecutionDao();
+        assertNotNull(testExecutionDao, "The returned ITestExecutionDao should not be null.");
+    }
 }

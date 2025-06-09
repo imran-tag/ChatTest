@@ -1,23 +1,23 @@
 package fr.uha.ensisa.gl.chatest.dao.chatest;
 
-import fr.uha.ensisa.gl.chatest.Test;
+import fr.uha.ensisa.gl.chatest.TestBis;
 import org.springframework.stereotype.Repository; 
 
 import java.util.*;
 
 @Repository 
 public class TestDao {
-    private List<Test> tests = new ArrayList<>();
+    private List<TestBis> tests = new ArrayList<>();
 
-    public List<Test> getAllTests() {
+    public List<TestBis> getAllTests() {
         return tests;
     }
 
-    public Optional<Test> getTestById(String id) {
+    public Optional<TestBis> getTestById(String id) {
         return tests.stream().filter(t -> t.getId().equals(id)).findFirst();
     }
 
-    public void addTest(Test test) {
+    public void addTest(TestBis test) {
         tests.add(test);
     }
 }

@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: fr.uha.ensisa.gl.chatest.dao.chatest.TestDaoMemTest
 -------------------------------------------------------------------------------
-Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.178 s -- in fr.uha.ensisa.gl.chatest.dao.chatest.TestDaoMemTest
+Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.126 s -- in fr.uha.ensisa.gl.chatest.dao.chatest.TestDaoMemTest
