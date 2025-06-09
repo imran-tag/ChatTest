@@ -1,7 +1,7 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 chatest-models,fr.uha.ensisa.gl.chatest,TestExecution,0,108,0,0,0,40,0,18,0,18
 chatest-models,fr.uha.ensisa.gl.chatest,TestGroup,0,75,0,0,0,25,0,12,0,12
-chatest-models,fr.uha.ensisa.gl.chatest,Test,26,0,0,0,9,0,6,0,6,0
+chatest-models,fr.uha.ensisa.gl.chatest,TestBis,0,26,0,0,0,9,0,6,0,6
 chatest-models,fr.uha.ensisa.gl.chatest,ChatStep,0,49,0,0,0,21,0,14,0,14
 chatest-models,fr.uha.ensisa.gl.chatest,TestExecution.StepResult,0,46,0,0,0,20,0,10,0,10
 chatest-models,fr.uha.ensisa.gl.chatest,ChatTest,0,58,0,4,0,17,0,13,0,11
