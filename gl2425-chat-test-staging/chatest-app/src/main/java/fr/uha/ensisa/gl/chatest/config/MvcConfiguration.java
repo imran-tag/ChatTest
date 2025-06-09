@@ -29,7 +29,7 @@ import fr.uha.ensisa.gl.chatest.dao.chatest.IDaoFactory;
 @EnableWebMvc
 public class MvcConfiguration implements WebMvcConfigurer {
     @Autowired
-    private ApplicationContext applicationContext;
+    public ApplicationContext applicationContext;
 
     @Bean
     public ViewResolver viewResolver() {

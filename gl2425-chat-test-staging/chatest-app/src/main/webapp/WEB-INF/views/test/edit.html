@@ -1,26 +1,37 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Edit Test</title>
+    <title>Edit Test Group</title>
+    <link rel="stylesheet" th:href="@{/libs/bootstrap.min.css}">
 </head>
 <body>
-<h1>Edit Test</h1>
-<form th:action="@{/test/update}" th:object="${test}" method="post">
-    <!-- Hidden field for ID -->
-    <input type="hidden" th:field="*{id}" />
+<div class="container">
+    <a class="btn btn-secondary mb-3" th:href="@{/test/list}">Back to Test List</a>
+    <h1 th:text="'Group: ' + ${group.name}"></h1>
+    <p th:text="'Description: ' + ${group.description}"></p>
 
-    <div>
-        <label for="name">Name:</label>
-        <input type="text" th:field="*{name}" id="name"/>
-    </div>
+    <h2>Tests in this group</h2>
+    <ul>
+        <li th:each="test : ${groupTests}">
+            <span th:text="${test.name}"></span>
+            <form th:action="@{/test/group/removeTest}" method="post" style="display:inline;">
+                <input type="hidden" name="groupId" th:value="${group.id}" />
+                <input type="hidden" name="testId" th:value="${test.id}" />
+                <button class="btn btn-sm btn-danger" type="submit">Remove</button>
+            </form>
+        </li>
+    </ul>
 
-    <div>
-        <label for="description">Description:</label>
-        <textarea th:field="*{description}" id="description"></textarea>
-    </div>
-
-    <button type="submit">Update Test</button>
-</form>
+    <h3>Add a test to this group</h3>
+    <form th:action="@{/test/group/addTest}" method="post">
+        <input type="hidden" name="groupId" th:value="${group.id}" />
+        <select name="testId" class="form-select w-auto d-inline">
+            <option th:each="test : ${availableTests}" th:value="${test.id}" th:text="${test.name}"></option>
+        </select>
+        <button class="btn btn-sm btn-success" type="submit">Add</button>
+    </form>
+</div>
+<script th:src="@{/libs/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

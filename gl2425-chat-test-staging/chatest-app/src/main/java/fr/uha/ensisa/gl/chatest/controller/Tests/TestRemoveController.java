@@ -1,4 +1,4 @@
-package fr.uha.ensisa.gl.chatest.controller;
+package fr.uha.ensisa.gl.chatest.controller.Tests;
 
 import org.springframework.web.bind.annotation.PathVariable;
 

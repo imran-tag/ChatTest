@@ -14,7 +14,7 @@ import java.util.List;
 public class TestGroupController {
 
     @Autowired
-    private TestGroupService groupService;
+    public TestGroupService groupService;
 
     @PostMapping
     public TestGroup createGroup(@RequestBody TestGroup group) {

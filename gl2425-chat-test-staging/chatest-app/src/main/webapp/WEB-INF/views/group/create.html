@@ -3,15 +3,99 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Create a Test Group</title>
+    <style>
+        body {
+            background: #1e2532;
+            color: #eef0f4;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        h1 {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 2.2rem;
+            color: #53a0fd;
+            letter-spacing: 1px;
+        }
+        form {
+            background: #232b3e;
+            max-width: 400px;
+            margin: 40px auto 0 auto;
+            padding: 32px 28px 20px 28px;
+            border-radius: 18px;
+            box-shadow: 0 8px 24px 0 rgba(30,37,50,0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        label {
+            font-size: 1.02rem;
+            margin-bottom: 6px;
+            color: #d0defa;
+            letter-spacing: .4px;
+        }
+        input[type="text"] {
+            background: #24293a;
+            border: 1px solid #344262;
+            color: #f7faff;
+            padding: 9px 13px;
+            border-radius: 7px;
+            font-size: 1rem;
+            transition: border .2s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #53a0fd;
+            background: #20253a;
+        }
+        input[type="submit"] {
+            margin-top: 8px;
+            padding: 11px 0;
+            background: linear-gradient(90deg, #3883e6 0%, #53a0fd 100%);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.07rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px 0 rgba(83,160,253,0.10);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        input[type="submit"]:hover {
+            background: linear-gradient(90deg, #2767c5 0%, #3883e6 100%);
+            box-shadow: 0 4px 12px 0 rgba(83,160,253,0.15);
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin: 30px auto 0 auto;
+            width: max-content;
+            color: #77c7fd;
+            font-size: 1.02rem;
+            text-decoration: none;
+            background: #223150;
+            padding: 7px 16px;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px 0 rgba(34,49,80,0.13);
+            transition: background 0.2s, color 0.2s;
+        }
+        a:hover {
+            background: #1e2532;
+            color: #53a0fd;
+        }
+    </style>
+
 </head>
 <body>
 <h1>Create Test Group</h1>
 <form th:action="@{/test/group/create}" method="post">
     <label for="name">Group Name:</label>
-    <input type="text" id="name" name="name" required><br><br>
+    <input type="text" id="name" name="name" required>
 
     <label for="description">Description:</label>
-    <input type="text" id="description" name="description" required><br><br>
+    <input type="text" id="description" name="description" required>
 
     <input type="submit" value="Create Group">
 </form>

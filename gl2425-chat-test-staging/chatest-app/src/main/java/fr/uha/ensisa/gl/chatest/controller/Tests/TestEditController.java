@@ -1,4 +1,4 @@
-package fr.uha.ensisa.gl.chatest.controller;
+package fr.uha.ensisa.gl.chatest.controller.Tests;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

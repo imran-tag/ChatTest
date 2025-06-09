@@ -1,29 +1,35 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Create a new test</title>
-
-    <script th:src="@{/resources/js/test/create.js}"></script>
+    <title>Create a Test</title>
+    <link rel="stylesheet" th:href="@{/libs/bootstrap.min.css}">
 </head>
 <body>
-<form method="post" onsubmit="formSubmit(event)" th:action="@{/test/create}" accept-charset="utf-8">
-    <label for="name">Name:</label>
-    <input id="name" name="name" required type="text">
-    <br>
-    <label for="description">Description:</label>
-    <input id="description" name="description" required type="text">
-    <br>
-    <label for="stepname">1st step name:</label>
-    <input id="stepname" name="st_name" required type="text">
-    <br>
-    <label for="stepDesc">1st step description:</label>
-    <input id="stepDesc" name="st_desc" required type="text">
-    <br>
-
-    <input type="submit" value="Create">
-
-    <a th:href="@{/test/list}">back</a>
-</form>
+<div class="container">
+    <div class="mt-3 mb-4">
+        <a class="btn btn-secondary"
+           th:if="${param.groupId}"
+           th:href="@{/test/group/edit/{id}(id=${param.groupId})}">Back to Group</a>
+        <a class="btn btn-secondary"
+           th:unless="${param.groupId}"
+           th:href="@{/test/group/list}">Back to Groups</a>
+    </div>
+    <h1>Create a Test</h1>
+    <form th:action="@{/test/create}" method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">Test Name:</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description:</label>
+            <input type="text" class="form-control" id="description" name="description" required>
+        </div>
+        <!-- Tu peux cacher ce champ si besoin -->
+        <input type="hidden" name="groupId" th:value="${param.groupId}" />
+        <button type="submit" class="btn btn-primary">Create Test</button>
+    </form>
+</div>
+<script th:src="@{/libs/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

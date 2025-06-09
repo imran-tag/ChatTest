@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-
     <meta charset="UTF-8">
     <title>Test List</title>
     <link rel="stylesheet" th:href="@{/libs/bootstrap.min.css}">
@@ -13,6 +12,7 @@
     <div class="mb-3">
         <a class="btn btn-primary" th:href="@{/test/create}">Create a new test</a>
         <a class="btn btn-info" th:href="@{/test/history}">View Test Execution History</a>
+        <a class="btn btn-secondary" th:href="@{/test/group/create}">Create a new group</a>
     </div>
 
     <div class="card">
@@ -31,10 +31,17 @@
                     <td th:text="${test.id}"></td>
                     <td th:text="${test.name}"></td>
                     <td th:text="${test.description}"></td>
-                    <td><a class="btn btn-sm btn-secondary" th:href="@{/test/steps/list/{id}(id=${test.id})}">Edit
-                        steps</a></td>
-                    <td><a class="btn btn-sm btn-success" th:href="@{/test/run/{id}/0(id=${test.id})}">Run</a></td>
-                    <td><a class="btn btn-sm btn-info" th:href="@{/test/history/test/{id}(id=${test.id})}">History</a>
+                    <td>
+                        <a class="btn btn-sm btn-secondary"
+                           th:href="@{/test/steps/list/{id}(id=${test.id})}">Edit steps</a>
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-success"
+                           th:href="@{/test/run/{id}/0(id=${test.id})}">Run</a>
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-info"
+                           th:href="@{/test/history/test/{id}(id=${test.id})}">History</a>
                     </td>
                 </tr>
                 </tbody>

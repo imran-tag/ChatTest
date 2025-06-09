@@ -2,12 +2,85 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Group List</title>
+    <meta charset="UTF-8"/>
+    <style>
+        body {
+            background: #1e2532;
+            color: #eef0f4;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        h1 {
+            margin: 42px auto 24px auto;
+            text-align: center;
+            font-size: 2.2rem;
+            color: #53a0fd;
+            letter-spacing: 1px;
+        }
+        ul {
+            max-width: 440px;
+            margin: 0 auto 44px auto;
+            padding: 0;
+            list-style: none;
+        }
+        li {
+            background: #232b3e;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px 0 rgba(30,37,50,0.11);
+            padding: 18px 22px;
+            margin-bottom: 15px;
+            font-size: 1.11rem;
+            color: #d7e4fa;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.17s, color 0.17s;
+        }
+        li:hover {
+            background: #223150;
+            color: #53a0fd;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin: 32px auto 0 auto;
+            width: max-content;
+            color: #fff;
+            font-size: 1.11rem;
+            text-decoration: none;
+            background: linear-gradient(90deg, #3883e6 0%, #53a0fd 100%);
+            padding: 12px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px 0 rgba(83,160,253,0.10);
+            font-weight: bold;
+            letter-spacing: .2px;
+            transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+        }
+        a:hover {
+            background: linear-gradient(90deg, #2767c5 0%, #3883e6 100%);
+            color: #eef0f4;
+            box-shadow: 0 4px 14px 0 rgba(83,160,253,0.13);
+        }
+        @media (max-width: 600px) {
+            ul {
+                max-width: 96vw;
+                padding-left: 2vw;
+                padding-right: 2vw;
+            }
+            li {
+                font-size: 1.02rem;
+                padding: 15px 8vw;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Test Groups</h1>
-    <ul>
-        <li th:each="group : ${groups}" th:text="${group.name} + ' - ' + ${group.description}"></li>
-    </ul>
-    <a th:href="@{/test/group/create}">Create New Group</a>
+<h1>Test Groups</h1>
+<ul>
+    <li th:each="group : ${groups}" th:text="${group.name} + ' - ' + ${group.description}"></li>
+</ul>
+<a th:href="@{/test/group/create}">Create New Group</a>
 </body>
 </html>

@@ -18,7 +18,7 @@ public class TestRunController {
 
     private final IDaoFactory daoFactory;
     // Store the current test execution in progress
-    private TestExecution currentExecution;
+    public TestExecution currentExecution;
 
     public TestRunController(IDaoFactory daoFactory) {
         this.daoFactory = daoFactory;

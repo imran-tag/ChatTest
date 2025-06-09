@@ -1,4 +1,4 @@
-package fr.uha.ensisa.gl.chatest.controller;
+package fr.uha.ensisa.gl.chatest.controller.Tests;
 
 import fr.uha.ensisa.gl.chatest.dao.chatest.IDaoFactory;
 import org.springframework.beans.factory.annotation.Autowired;

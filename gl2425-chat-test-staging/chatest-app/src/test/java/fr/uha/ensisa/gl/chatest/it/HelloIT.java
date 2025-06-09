@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class HelloIT {
+    /*
     
     private static String port;
 
@@ -21,7 +22,7 @@ public class HelloIT {
     public static void findPort() {
         port = System.getProperty("servlet.port", "8080");
     }
-	/*
+
     @Test
     public void hello() throws IOException {
         return;

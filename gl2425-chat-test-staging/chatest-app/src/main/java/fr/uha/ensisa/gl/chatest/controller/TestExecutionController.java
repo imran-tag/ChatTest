@@ -4,6 +4,9 @@ import fr.uha.ensisa.gl.chatest.ChatStep;
 import fr.uha.ensisa.gl.chatest.ChatTest;
 import fr.uha.ensisa.gl.chatest.TestExecution;
 import fr.uha.ensisa.gl.chatest.dao.chatest.IDaoFactory;
+import fr.uha.ensisa.gl.chatest.dao.chatest.ITestDao;
+import fr.uha.ensisa.gl.chatest.dao.chatest.ITestExecutionDao;
+import fr.uha.ensisa.gl.chatest.dao.chatest.TestDao;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -47,16 +50,18 @@ public class TestExecutionController {
 
     @GetMapping("/{id}")
     public String viewExecution(@PathVariable("id") long executionId, Model model) {
-        TestExecution execution = daoFactory.getTestExecutionDao().find(executionId);
-        if (execution == null) {
+        ITestExecutionDao testExecutionDao = daoFactory.getTestExecutionDao();
+        if (testExecutionDao == null) {
             return "redirect:/test/history";
         }
+        TestExecution execution = testExecutionDao.find(executionId);
 
         // Get the test details
-        ChatTest test = daoFactory.getTestDao().find(execution.getTestId());
-        if (test == null) {
+        ITestDao testDao = daoFactory.getTestDao();
+        if (testDao == null) {
             return "redirect:/test/history";
         }
+        ChatTest test = testDao.find(execution.getTestId());
         
         // If the execution doesn't have step results (older executions before this update),
         // display a message to the user

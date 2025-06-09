@@ -1,11 +1,10 @@
-package fr.uha.ensisa.gl.chatest.controller;
+package fr.uha.ensisa.gl.chatest.controller.Tests;
 
 import fr.uha.ensisa.gl.chatest.TestGroup; 
 import fr.uha.ensisa.gl.chatest.dao.chatest.TestGroupDao; 
-import fr.uha.ensisa.gl.chatest.Test;
+import fr.uha.ensisa.gl.chatest.TestBis;
 
-import fr.uha.ensisa.gl.chatest.Test; 
-import fr.uha.ensisa.gl.chatest.dao.chatest.TestDao; 
+import fr.uha.ensisa.gl.chatest.dao.chatest.TestDao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,6 +23,11 @@ public class TestGroupViewController {
 
     @Autowired
     private TestDao testDao;
+
+    public TestGroupViewController(TestGroupDao groupDao, TestDao testDao) {
+        this.groupDao = groupDao;
+        this.testDao = testDao;
+    }
 
     // List all groups
     @GetMapping("/list")
@@ -56,15 +60,15 @@ public class TestGroupViewController {
             TestGroup group = optGroup.get();
             model.addAttribute("group", group);
             // All tests in this group
-            List<Test> groupTests = group.getTestIds().stream()
+            List<TestBis> groupTests = group.getTestIds().stream()
                 .map(testId -> testDao.getTestById(testId).orElse(null))
                 .filter(t -> t != null)
                 .collect(Collectors.toList());
             model.addAttribute("groupTests", groupTests);
 
             // All tests not in this group (to add)
-            List<Test> allTests = testDao.getAllTests();
-            List<Test> availableTests = allTests.stream()
+            List<TestBis> allTests = testDao.getAllTests();
+            List<TestBis> availableTests = allTests.stream()
                 .filter(t -> !group.getTestIds().contains(t.getId()))
                 .collect(Collectors.toList());
             model.addAttribute("availableTests", availableTests);

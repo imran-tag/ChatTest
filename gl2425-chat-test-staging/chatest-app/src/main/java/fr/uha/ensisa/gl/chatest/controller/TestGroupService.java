@@ -1,5 +1,4 @@
 package fr.uha.ensisa.gl.chatest.controller;
-import fr.uha.ensisa.gl.chatest.Test;
 
 import org.springframework.stereotype.Service;
 import fr.uha.ensisa.gl.chatest.TestGroup; 
@@ -9,10 +8,18 @@ import java.util.List;
 
 @Service
 public class TestGroupService {
+
+    public TestGroupService(TestGroupDao groupDao) {
+        this.groupDao = groupDao;
+    }
     private final TestGroupDao groupDao;
 
     public TestGroupService() {
         this.groupDao = new TestGroupDao();
+    }
+
+    public TestGroupDao getGroupDao() {
+        return groupDao;
     }
 
     public TestGroup createGroup(String name, String description) {

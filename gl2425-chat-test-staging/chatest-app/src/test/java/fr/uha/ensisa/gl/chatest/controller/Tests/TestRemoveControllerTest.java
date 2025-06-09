@@ -1,6 +1,6 @@
 package fr.uha.ensisa.gl.chatest.controller.Tests;
 
-import fr.uha.ensisa.gl.chatest.controller.TestRemoveController;
+import fr.uha.ensisa.gl.chatest.controller.Tests.TestListController;
 import fr.uha.ensisa.gl.chatest.dao.chatest.IDaoFactory;
 import fr.uha.ensisa.gl.chatest.dao.chatest.ITestDao;
 import org.junit.jupiter.api.BeforeEach;

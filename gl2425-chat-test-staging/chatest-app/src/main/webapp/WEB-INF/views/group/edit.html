@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8"/>
     <title>Edit Test Group</title>
+    <link rel="stylesheet" th:href="@{/libs/bootstrap.min.css}">
 </head>
 <body>
+<div class="container">
+    <a class="btn btn-secondary mb-3" th:href="@{/test/list}">Back to Test List</a>
     <h1 th:text="'Group: ' + ${group.name}"></h1>
     <p th:text="'Description: ' + ${group.description}"></p>
 
@@ -14,20 +18,14 @@
             <form th:action="@{/test/group/removeTest}" method="post" style="display:inline;">
                 <input type="hidden" name="groupId" th:value="${group.id}" />
                 <input type="hidden" name="testId" th:value="${test.id}" />
-                <button type="submit">Remove</button>
+                <button class="btn btn-sm btn-danger" type="submit">Remove</button>
             </form>
         </li>
     </ul>
 
-    <h3>Add a test to this group</h3>
-    <form th:action="@{/test/group/addTest}" method="post">
-        <input type="hidden" name="groupId" th:value="${group.id}" />
-        <select name="testId">
-            <option th:each="test : ${availableTests}" th:value="${test.id}" th:text="${test.name}"></option>
-        </select>
-        <button type="submit">Add</button>
-    </form>
 
-    <a th:href="@{/test/group/list}">Back to group list</a>
+</div>
+<script th:src="@{/libs/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
+
